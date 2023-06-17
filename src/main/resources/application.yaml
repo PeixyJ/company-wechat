@@ -1,0 +1,5 @@
+wechat:
+  approve:
+    token: xxxxx
+    corpId: xxxxx
+    encodingAesKey: xxxxx
