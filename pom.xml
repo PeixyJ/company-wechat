@@ -64,7 +64,7 @@
                                 app
                             </finalName>
                             <mainClass>
-                                priv.peixinyi.tt.ApplicationRun
+                                priv.peixinyi.cw.ApplicationRun
                             </mainClass>
                         </configuration>
                     </execution>
