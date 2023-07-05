@@ -4,12 +4,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import priv.peixinyi.cw.config.ApproveConfig;
 import priv.peixinyi.cw.utils.AesException;
 import priv.peixinyi.cw.utils.WXBizJsonMsgCrypt;
+import priv.peixinyi.cw.utils.WXBizMsgCrypt;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * @author peixinyi
@@ -21,17 +31,35 @@ public class WeChatApproveController {
 
     private static String MESSAGE;
 
-    @GetMapping("/suite/receive/message")
+    private static String sReqMsgSig;
+    private static String sReqTimeStamp;
+    private static String sReqNonce;
+
+    @GetMapping("/approve/message")
     public String getMessage() {
         return MESSAGE;
     }
 
+    @GetMapping("/approve/message/decode")
+    public String getMessageDecode() throws AesException, ParserConfigurationException, IOException, SAXException {
+        String TOKEN = ApproveConfig.getApproveConfig().getToken();
+        String CORP_ID = ApproveConfig.getApproveConfig().getCorpId();
+        String ENCODING_AES_KEY = ApproveConfig.getApproveConfig().getEncodingAesKey();
+        WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(TOKEN, ENCODING_AES_KEY, CORP_ID);
+        String sMsg = wxcpt.DecryptMsg(sReqMsgSig, sReqTimeStamp, sReqNonce, MESSAGE);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        StringReader sr = new StringReader(sMsg);
+        InputSource is = new InputSource(sr);
+        Document document = db.parse(is);
+        Element root = document.getDocumentElement();
+        NodeList nodelist1 = root.getElementsByTagName("Content");
+        return nodelist1.item(0).getTextContent();
+    }
+
 
     @GetMapping("/approve")
-    public String approve(@RequestParam String msg_signature,
-                          @RequestParam String timestamp,
-                          @RequestParam String nonce,
-                          @RequestParam String echostr) throws AesException {
+    public String approve(@RequestParam String msg_signature, @RequestParam String timestamp, @RequestParam String nonce, @RequestParam String echostr) throws AesException {
         String TOKEN = ApproveConfig.getApproveConfig().getToken();
         String CORP_ID = ApproveConfig.getApproveConfig().getCorpId();
         String ENCODING_AES_KEY = ApproveConfig.getApproveConfig().getEncodingAesKey();
@@ -42,6 +70,9 @@ public class WeChatApproveController {
 
     @PostMapping("/approve")
     public String accredit(HttpServletRequest request, HttpServletResponse response) {
+        sReqMsgSig = request.getParameter("msg_signature");
+        sReqTimeStamp = request.getParameter("timestamp");
+        sReqNonce = request.getParameter("nonce");
         StringBuilder requestBody = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
             String line;
