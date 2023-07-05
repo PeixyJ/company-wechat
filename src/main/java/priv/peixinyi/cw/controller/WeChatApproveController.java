@@ -1,5 +1,6 @@
 package priv.peixinyi.cw.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import priv.peixinyi.cw.utils.WXBizJsonMsgCrypt;
  * @author peixinyi
  * 企业微信 Url 认证
  */
+@Slf4j
 @RestController
 public class WeChatApproveController {
 
@@ -23,6 +25,7 @@ public class WeChatApproveController {
         String TOKEN = ApproveConfig.getApproveConfig().getToken();
         String CORP_ID = ApproveConfig.getApproveConfig().getCorpId();
         String ENCODING_AES_KEY = ApproveConfig.getApproveConfig().getEncodingAesKey();
+        log.info("TOKEN :{} CORP_ID :{} ENCODING_AES_KEY :{}", TOKEN, CORP_ID, ENCODING_AES_KEY);
         WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt(TOKEN, ENCODING_AES_KEY, CORP_ID);
         return wxcpt.VerifyURL(msg_signature, timestamp, nonce, echostr);
     }
