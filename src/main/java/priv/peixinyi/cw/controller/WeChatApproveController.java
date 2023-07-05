@@ -46,15 +46,7 @@ public class WeChatApproveController {
         String CORP_ID = ApproveConfig.getApproveConfig().getCorpId();
         String ENCODING_AES_KEY = ApproveConfig.getApproveConfig().getEncodingAesKey();
         WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(TOKEN, ENCODING_AES_KEY, CORP_ID);
-        String sMsg = wxcpt.DecryptMsg(sReqMsgSig, sReqTimeStamp, sReqNonce, MESSAGE);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        StringReader sr = new StringReader(sMsg);
-        InputSource is = new InputSource(sr);
-        Document document = db.parse(is);
-        Element root = document.getDocumentElement();
-        NodeList nodelist1 = root.getElementsByTagName("Content");
-        return nodelist1.item(0).getTextContent();
+        return wxcpt.DecryptMsg(sReqMsgSig, sReqTimeStamp, sReqNonce, MESSAGE);
     }
 
 
