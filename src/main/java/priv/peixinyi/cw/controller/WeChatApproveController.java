@@ -1,12 +1,15 @@
 package priv.peixinyi.cw.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import priv.peixinyi.cw.config.ApproveConfig;
 import priv.peixinyi.cw.utils.AesException;
 import priv.peixinyi.cw.utils.WXBizJsonMsgCrypt;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * @author peixinyi
@@ -28,6 +31,22 @@ public class WeChatApproveController {
         log.info("TOKEN :{} CORP_ID :{} ENCODING_AES_KEY :{}", TOKEN, CORP_ID, ENCODING_AES_KEY);
         WXBizJsonMsgCrypt wxcpt = new WXBizJsonMsgCrypt(TOKEN, ENCODING_AES_KEY, CORP_ID);
         return wxcpt.VerifyURL(msg_signature, timestamp, nonce, echostr);
+    }
+
+    @PostMapping("/suite/receive")
+    public String accredit(HttpServletRequest request, HttpServletResponse response) {
+        StringBuilder requestBody = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                requestBody.append(line);
+            }
+        } catch (IOException e) {
+            // 处理异常
+        }
+        String requestBodyString = requestBody.toString();
+        log.info("requestBodyString :{}", requestBodyString);
+        return "success";
     }
 
 }
