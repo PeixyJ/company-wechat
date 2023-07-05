@@ -40,7 +40,7 @@ public class WeChatApproveController {
         return wxcpt.VerifyURL(msg_signature, timestamp, nonce, echostr);
     }
 
-    @PostMapping("/suite/receive")
+    @PostMapping("/approve")
     public String accredit(HttpServletRequest request, HttpServletResponse response) {
         StringBuilder requestBody = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
