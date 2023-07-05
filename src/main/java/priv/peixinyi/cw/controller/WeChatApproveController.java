@@ -19,6 +19,13 @@ import java.io.IOException;
 @RestController
 public class WeChatApproveController {
 
+    private static String MESSAGE;
+
+    @GetMapping("/suite/receive/message")
+    public String getMessage() {
+        return MESSAGE;
+    }
+
 
     @GetMapping("/approve")
     public String approve(@RequestParam String msg_signature,
@@ -46,6 +53,7 @@ public class WeChatApproveController {
         }
         String requestBodyString = requestBody.toString();
         log.info("requestBodyString :{}", requestBodyString);
+        MESSAGE = requestBodyString;
         return "success";
     }
 

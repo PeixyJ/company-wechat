@@ -3,3 +3,7 @@ wechat:
     token: xxxxx
     corpId: xxxxx
     encodingAesKey: xxxxx
+
+server:
+  servlet:
+    context-path: /wechat
